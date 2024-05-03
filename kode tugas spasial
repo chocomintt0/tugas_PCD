@@ -1,0 +1,97 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+from scipy import ndimage
+
+# Memuat gambar ke image1 dan image2
+image1 = Image.open("/content/Screenshot (676).png").convert("L") 
+image2 = Image.open("/content/Screenshot (677).png").convert("L") 
+
+# Mengonversi gambar menjadi array numpy
+image1_array = np.array(image1)
+image2_array = np.array(image2)
+
+# Fungsi untuk membuat citra perbedaan
+def difference_image(image1, image2):
+    return np.abs(image1 - image2)
+
+# Fungsi untuk menerapkan filter rata-rata
+def average_filter(image, size):
+    kernel = np.ones((size, size)) / (size * size)
+    return ndimage.convolve(image, kernel)
+
+# Fungsi untuk menerapkan filter median
+def median_filter(image, size):
+    return ndimage.median_filter(image, size=size)
+
+# Fungsi untuk menerapkan filter minimum
+def min_filter(image, size):
+    return ndimage.minimum_filter(image, size=size)
+
+# Fungsi untuk menerapkan filter maksimum
+def max_filter(image, size):
+    return ndimage.maximum_filter(image, size=size)
+
+# Fungsi untuk menerapkan operator Laplacian
+def laplacian_filter(image):
+    laplacian_kernel = np.array([[0, 1, 0],
+                                 [1, -4, 1],
+                                 [0, 1, 0]])
+    return ndimage.convolve(image, laplacian_kernel)
+
+# Fungsi untuk menerapkan operasi gradient Sobel
+def sobel_gradient(image):
+    sobel_x = ndimage.sobel(image, axis=0)
+    sobel_y = ndimage.sobel(image, axis=1)
+    gradient_magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
+    return gradient_magnitude
+
+# Operasi citra
+difference_img = difference_image(image1_array, image2_array)
+average_filtered_img = average_filter(image1_array, size=3)
+median_filtered_img = median_filter(image1_array, size=3)
+min_filtered_img = min_filter(image1_array, size=3)
+max_filtered_img = max_filter(image1_array, size=3)
+laplacian_img = laplacian_filter(image1_array)
+sobel_gradient_img = sobel_gradient(image1_array)
+
+# Menampilkan citra
+plt.figure(figsize=(12, 12))
+
+plt.subplot(3, 3, 1)
+plt.imshow(image1, cmap='gray')
+plt.title('Image 1')
+
+plt.subplot(3, 3, 2)
+plt.imshow(image2, cmap='gray')
+plt.title('Image 2')
+
+plt.subplot(3, 3, 3)
+plt.imshow(difference_img, cmap='gray')
+plt.title('Difference Image')
+
+plt.subplot(3, 3, 4)
+plt.imshow(average_filtered_img, cmap='gray')
+plt.title('Average Filter')
+
+plt.subplot(3, 3, 5)
+plt.imshow(median_filtered_img, cmap='gray')
+plt.title('Median Filter')
+
+plt.subplot(3, 3, 6)
+plt.imshow(min_filtered_img, cmap='gray')
+plt.title('Minimum Filter')
+
+plt.subplot(3, 3, 7)
+plt.imshow(max_filtered_img, cmap='gray')
+plt.title('Maximum Filter')
+
+plt.subplot(3, 3, 8)
+plt.imshow(laplacian_img, cmap='gray')
+plt.title('Laplacian')
+
+plt.subplot(3, 3, 9)
+plt.imshow(sobel_gradient_img, cmap='gray')
+plt.title('Sobel Gradient')
+
+plt.show()
